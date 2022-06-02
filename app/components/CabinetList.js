@@ -10,7 +10,7 @@ import { getCabinets } from "../api";
 import colors from "../config/colors";
 import { Icon } from "react-native-elements"
 
-export default function CabinetList() {
+export const CabinetList = () => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
 
@@ -62,3 +62,5 @@ const styles = StyleSheet.create({
     marginHorizontal: 12
   }
 });
+
+export default CabinetList

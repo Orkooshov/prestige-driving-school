@@ -1,33 +1,20 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, ScrollView, StyleSheet } from "react-native";
-import { Text, Button } from "react-native-elements";
-import { Icon } from "react-native-elements/dist/icons/Icon";
-import { ListItem, Avatar } from "react-native-elements";
+import { Text, Button, Avatar } from "react-native-elements";
+import { Icon, avatar } from "react-native-elements/dist/icons/Icon";
+import { ListItem } from "react-native-elements";
 
 import colors from "../config/colors";
-import { PrimaryButton } from "../components/buttons";
+import { PrimaryButton } from "../components/Buttons";
+import { getStudent } from "../utils/api/student";
+import { clear, removeItem } from "../utils/storage";
 
-const data = {
-  surname: "Иванов",
-  name: "Иван",
-  patronymic: "Иванович",
-  username: "username",
-  email: "ivanov@ivan.ov",
-  birthDate: "1.1.2001",
-  role: "Ученик",
-  avatarUri:
-    "https://w7.pngwing.com/pngs/340/946/png-transparent-avatar-user-computer-icons-software-developer-avatar-child-face-heroes-thumbnail.png",
-};
 
 export const PersonalDataItem = ({ title, iconName }) => {
   return (
     <ListItem
-      bottomDivider
-      containerStyle={{
-        width: "100%",
-        padding: 24,
-        backgroundColor: colors.background,
-      }}
+      // bottomDivider
+      containerStyle={styles.itemContainer}
     >
       <Icon name={iconName} color={colors.primary} style={styles.itemIcon} />
       <ListItem.Content>
@@ -39,80 +26,113 @@ export const PersonalDataItem = ({ title, iconName }) => {
   );
 };
 
-export const PersonalDataList = ({ containerStyle }) => {
+function getFullName(user) {
+  return `${user.last_name} ${user.first_name} ${user.middle_name}`
+}
+
+export const PersonalDataList = ({ student }) => {
   return (
-    <View style={[{ width: "100%" }, { ...containerStyle }]}>
-      <PersonalDataItem title="Иванов Иван" iconName="person" />
-      <PersonalDataItem title="ivanov@ivan.ov" iconName="email" />
-      <PersonalDataItem title="1.1.2001" iconName="calendar-today" />
-      <PersonalDataItem title="4ИП" iconName="group" />
-			<PersonalDataItem title="Иванов Иван" iconName="support-agent" />
-			<PersonalDataItem title="Автомат" iconName="inventory" />
+    <View>
+      <PersonalDataItem title={getFullName(student.user)} iconName="person" />
+      <PersonalDataItem title={student.user.email} iconName="email" />
+      <PersonalDataItem title={student.user.phone_number} iconName="call" />
+      <PersonalDataItem title={student.group.name} iconName="group" />
+      <PersonalDataItem title={getFullName(student.instructor.user)} iconName="support-agent" />
+      <PersonalDataItem title={student.license_category} iconName="category" />
     </View>
   );
 };
 
-export default function ProfileScreen({ navigation }) {
-  const onPressLogoutBtn = () => {
-    navigation.goBack();
-    navigation.goBack();
-  }
+export const Bottom = ({ isLoading, data }) => {
   const onPressEditBtn = () => {
-    navigation.navigate("ProfileEdit")
+    // navigation.navigate("ProfileEdit")
+    console.log('unhandled event')
   }
 
+  return <View style={styles.bottom}>
+    {isLoading ?
+      <Text>Loading</Text> :
+      <PersonalDataList student={data} />
+    }
+    <PrimaryButton title="Редактировать" onPress={onPressEditBtn}
+      buttonStyle={styles.editButton} />
+  </View>
+}
+
+export const ProfileScreen = ({ navigation }) => {
+  const onPressLogoutBtn = () => {
+    clear()
+    navigation.navigate('Auth')
+  }
+  const onSuccess = data => {
+    setData(data)
+    setLoading(false)
+  }
+  const onError = err => {
+    console.log(`error ${err}`)
+  }
+  useEffect(() => {
+    getStudent(onSuccess, onError, onError, () => null)
+  }, [])
+
+  const [isLoading, setLoading] = useState(true)
+  const [data, setData] = useState([])
+
   return (
-    <ScrollView style={styles.bg}>
-      <Button
-        containerStyle={{position: "absolute", right: 12, top: 24}}
+    <ScrollView style={{ paddingTop: 30 }}>
+      <Button onPress={onPressLogoutBtn}
+        containerStyle={{ position: "absolute", right: 12, top: 24 }}
         buttonStyle={{ backgroundColor: colors.primary, borderRadius: 12 }}
-        icon={<Icon name="logout" color={colors.primaryText} size={36} />}
-        onPress={ onPressLogoutBtn }
-      />
+        icon={<Icon name="logout" color={colors.primaryText} size={24} />} />
       <View style={styles.container}>
-        <Avatar
-          source={{ uri: data.avatarUri }}
-          rounded
-          size={64}
-          containerStyle={{ marginTop: 48 }}
-        />
-        <PersonalDataList />
-        <PrimaryButton
-          title="Редактировать"
-          buttonStyle={{
-            paddingVertical: 8,
-            paddingHorizontal: 12,
-            marginTop: 24,
-          }}
-          onPress={onPressEditBtn}
-        />
+        <Text style={{ fontSize: 20 }}>{isLoading ? '' : data.user.username}</Text>
+        <Avatar rounded containerStyle={styles.avatarContainer} size={96}
+          source={isLoading ? require('../../assets/icon.png') : {uri: data.user.photo }} />
+        <Bottom isLoading={isLoading} data={data} />
       </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  bg: {
-    backgroundColor: colors.background,
+  avatarContainer: {
+    marginVertical: 16,
+    borderColor: colors.primary,
+    borderWidth: 1
   },
   container: {
     flex: 1,
     alignItems: "center",
-    paddingBottom: 36,
+    paddingTop: 16,
+    paddingBottom: 24,
+  },
+  itemContainer: {
+    padding: 24,
+    minWidth: 300
   },
   itemText: {
     fontSize: 20,
-    marginLeft: 20,
+    marginLeft: 12,
     color: colors.textInactive,
   },
   itemIcon: {
-    marginHorizontal: 12,
+    marginHorizontal: 4,
   },
-  personalDataContainer: {
-    // borderRadius: 8,
-    width: "100%",
-    // backgroundColor: "yellow",
-    marginVertical: 30,
-    padding: 20,
+  bottom: {
+    flex: 1,
+    width: '100%',
+    overflow: 'hidden',
+    backgroundColor: colors.light,
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
   },
+  editButton: {
+    alignSelf: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginVertical: 24,
+    width: 200
+  }
 });
+
+export default ProfileScreen

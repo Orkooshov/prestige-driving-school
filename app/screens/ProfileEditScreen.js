@@ -1,7 +1,7 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Text, Input, Avatar } from "react-native-elements";
-import PrimaryButton from "../components/buttons";
+import PrimaryButton from "../components/Buttons";
 
 import colors from "../config/colors";
 
@@ -29,7 +29,7 @@ export function ProfileEditForm() {
   );
 }
 
-export default function ProfileEditScreen() {
+export const ProfileEditScreen = () => {
   return (
     <View style={styles.container}>
       <Avatar size={96} containerStyle={{alignSelf: "center", marginVertical: 40}} rounded source={{uri: "https://w7.pngwing.com/pngs/340/946/png-transparent-avatar-user-computer-icons-software-developer-avatar-child-face-heroes-thumbnail.png"}} />
@@ -58,3 +58,5 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
 });
+
+export default ProfileEditScreen

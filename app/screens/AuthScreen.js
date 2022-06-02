@@ -13,9 +13,9 @@ import Logo from "../components/Logo";
 import {
   PrimaryButton,
   SecondaryButton,
-} from "../components/buttons";
+} from "../components/Buttons";
 import { getToken } from "../utils/api/auth";
-import { storeApiKey, getApiKey } from "../utils/storage";
+import { setItem } from "../utils/storage";
 
 export const LoginForm = ({ onChangeLogin, onChangePassword, errorMessage }) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -56,7 +56,7 @@ export const LoginForm = ({ onChangeLogin, onChangePassword, errorMessage }) => 
   );
 };
 
-export default function AuthScreen({ navigation }) {
+export const AuthScreen = ({ navigation }) => {
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -64,8 +64,9 @@ export default function AuthScreen({ navigation }) {
   const onSuccess = token => {
     console.log(`token ${token}`)
     setErrorMessage("")
-    storeApiKey(token)
-    navigation.navigate("Profile")
+    setItem('apiKey', token)
+    setItem('username', login)
+    navigation.navigate("Home")
   }
   const onNetworkError = error => {
     console.error(`${error}`)
@@ -83,13 +84,13 @@ export default function AuthScreen({ navigation }) {
       onCredentialsIncorrect)
   }
   const onForgotPswdBtnPress = () => {
-    alert('Сожалеем :(')
+    navigation.navigate('Home')
   }
 
   return <ScrollView style={{ paddingTop: 30 }}>
     <View style={styles.container}>
       <Logo />
-      <View style={[styles.itemsContainer]}>
+      <View style={styles.itemsContainer}>
         <LoginForm onChangeLogin={setLogin} onChangePassword={setPassword} errorMessage={errorMessage} />
         <View style={styles.buttonsContainer}>
           <PrimaryButton title="Войти" wide onPress={onLoginBtnPress} />
@@ -105,7 +106,7 @@ export default function AuthScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "space-evenly",
     alignItems: "center",
     flexDirection: "column",
     width: "100%",
@@ -125,14 +126,12 @@ const styles = StyleSheet.create({
     maxWidth: 400,
   },
   itemsContainer: {
-    flex: 1,
-    paddingVertical: 60,
-    justifyContent: "center",
-    alignItems: "center",
-    flexShrink: 0.5,
     width: "100%",
+    marginBottom: "20%"
   },
   icon: {
     color: colors.primary,
   },
 });
+
+export default AuthScreen

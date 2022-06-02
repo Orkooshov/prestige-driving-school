@@ -1,13 +1,13 @@
 import URLs from "../../config/server";
 import { sendRequest } from "./fetch.js";
-import { AuthError } from "./error";
+import { AuthError } from "../errors";
 
 
 const url = URLs.getToken
 
 export async function getToken(username, password, onSuccess, 
     onNetworkError, onCredentialsIncorrect) {
-    const p = await sendRequest(
+    await sendRequest(
         url,
         "POST",
         {"Content-Type": "Application/json"},
@@ -26,5 +26,4 @@ export async function getToken(username, password, onSuccess,
         }
         onNetworkError(error)
     });
-
 }

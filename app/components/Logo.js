@@ -3,21 +3,20 @@ import { Icon } from "react-native-elements/dist/icons/Icon";
 
 import colors from '../config/colors';
 
-export const randColor = () =>
-{
+export function randColor() {
   let red = Math.floor(Math.random() * 255);
   let green = Math.floor(Math.random() * 255);
   let blue = Math.floor(Math.random() * 255);
   return `rgb(${red},${green},${blue})`;
 }
 
-export default function Logo({size, iconSize}) {
+export const Logo = ({size, iconSize}) => {
   const logoOnPress = () => {
     const color = randColor();
     setLogoColor(color);
   };
   const logoOnLongPress = () => {
-    alert("ты чиво творишь?!");
+    setLogoColor('rgb(240, 10, 10)')
   };
 
   const [logoColor, setLogoColor] = useState(colors.primary);
@@ -31,12 +30,14 @@ export default function Logo({size, iconSize}) {
   return (
     <Icon
       name="favorite"
-      raised
       color={logoColor}
       size={size}
       iconStyle={{ fontSize: iconSize }}
+      containerStyle={{borderWidth: 2, borderRadius: 100, padding: 24, borderColor: logoColor}}
       onPress={logoOnPress}
       onLongPress={logoOnLongPress}
     />
   );
 }
+
+export default Logo

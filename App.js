@@ -1,26 +1,25 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import HomeScreen from './app/screens/HomeScreen';
 import colors from './app/config/colors';
-import Aa from './app/screens/AuthScreen';
-import Bb from './app/screens/ProfileScreen';
+import AuthScreen from './app/screens/AuthScreen';
 
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator()
 
-export default function App() {
+export const App = () => {
   return (
     <View style={styles.container}>
       <StatusBar style="light" backgroundColor={colors.primary} />
-      <NavigationContainer initialRouteName="Auth">
-        <Stack.Navigator>
-          <Stack.Screen name="Auth" component={Aa}
+
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName='Auth'>
+          <Stack.Screen name="Auth" component={AuthScreen}
             options={{ headerShown: false }} />
-          <Stack.Screen name="Profile" component={Bb}
-            options={{ headerShown: false }} />
+          <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>
@@ -33,3 +32,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
 });
+
+export default App

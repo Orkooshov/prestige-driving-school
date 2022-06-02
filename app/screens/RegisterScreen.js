@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { Text, Input } from "react-native-elements";
 import colors from "../config/colors";
-import { PrimaryButton } from "../components/buttons";
+import { PrimaryButton } from "../components/Buttons";
 import Logo from "../components/Logo";
 
 export const RegisterForm = ({
@@ -87,7 +87,7 @@ export const RegisterForm = ({
   );
 };
 
-export default function RegisterScreen({ navigation }) {
+export const RegisterScreen = ({ navigation }) => {
   const onPressRegisterBtn = () => {
     let s = `Имя: ${name}\nФамилия: ${lastName}\nОтчество: ${patronymic}\nДата: ${birthDate}\nПочта: ${email}\nUsername: ${username}\npswd: ${password}\npswd2${password2}`;
     alert(s);
@@ -158,3 +158,5 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
 });
+
+export default RegisterScreen
